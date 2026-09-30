@@ -1,0 +1,47 @@
+name: Sync Family TimeTree to Google Calendar
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install timetree-exporter
+        run: pip install timetree-exporter==0.9.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Decode Google credentials
+        run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}" | base64 -d > /tmp/google-credentials.json
+
+      - name: Run Family sync
+        env:
+          TIMETREE_EMAIL: ${{ secrets.TIMETREE_EMAIL }}
+          TIMETREE_PASSWORD: ${{ secrets.TIMETREE_PASSWORD }}
+          TIMETREE_CALENDAR_CODE: cHsx7daAmmzY
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/google-credentials.json
+          FAMILY_TOMOKO_CALENDAR_ID: ${{ vars.FAMILY_TOMOKO_CALENDAR_ID }}
+          FAMILY_FUTARI_CALENDAR_ID: ${{ vars.FAMILY_FUTARI_CALENDAR_ID }}
+        run: npx tsx src/family-index.ts
+
+      - name: Clean up credentials
+        if: always()
+        run: rm -f /tmp/google-credentials.json
