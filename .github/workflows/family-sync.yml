@@ -1,6 +1,9 @@
 name: Sync Family TimeTree to Google Calendar
 
 on:
+  schedule:
+    - cron: '*/15 * * * *'
+      timezone: 'Asia/Tokyo'
   workflow_dispatch:
 
 jobs:
