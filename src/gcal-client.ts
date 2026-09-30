@@ -126,7 +126,9 @@ if (event.allDay) {
 }
 
 if (event.recurrence.length > 0) {
-  body.recurrence = event.recurrence;
+  body.recurrence = event.recurrence.map((rule) =>
+    rule.replace(/^RRULE;TZID=[^:]+:/, "RRULE:")
+  );
 }
     return body;
   }
