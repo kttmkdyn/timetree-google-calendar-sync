@@ -20,8 +20,8 @@ jobs:
           python-version: '3.12'
 
       - name: Install timetree-exporter
-        run: pip install timetree-exporter
-
+        run: pip install timetree-exporter==0.9.0
+        
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
