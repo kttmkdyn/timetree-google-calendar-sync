@@ -126,9 +126,12 @@ if (event.allDay) {
 }
 
 if (event.recurrence.length > 0) {
-  body.recurrence = event.recurrence.map((rule) =>
-    rule.replace(/^RRULE;TZID=[^:]+:/, "RRULE:")
-  );
+  body.recurrence = event.recurrence
+    .flatMap((rule) => rule.split(/\r?\n/))
+    .filter((rule) => !rule.includes("DTSTART"))
+    .map((rule) =>
+      rule.replace(/^((?:RRULE|RDATE|EXDATE));TZID=[^:]+:/, "$1:")
+    );
 }
     return body;
   }
