@@ -108,20 +108,47 @@ export class GCalClient {
       },
     };
 
-    if (event.allDay) {
-      body.start = { date: formatDate(event.start) };
-      body.end = { date: formatDate(event.end) };
-    } else {
-      body.start = { dateTime: event.start.toISOString() };
-      body.end = { dateTime: event.end.toISOString() };
-    }
+if (event.allDay) {
+  body.start = { date: formatDate(event.start) };
+  body.end = { date: formatDate(event.end) };
+} else if (event.recurrence.length > 0) {
+  body.start = {
+    dateTime: toJstDateTime(event.start),
+    timeZone: "Asia/Tokyo",
+  };
+  body.end = {
+    dateTime: toJstDateTime(event.end),
+    timeZone: "Asia/Tokyo",
+  };
+} else {
+  body.start = { dateTime: event.start.toISOString() };
+  body.end = { dateTime: event.end.toISOString() };
+}
 
-    if (event.recurrence.length > 0) {
-      body.recurrence = event.recurrence;
-    }
-
+if (event.recurrence.length > 0) {
+  body.recurrence = event.recurrence;
+}
     return body;
   }
+}
+
+/** 日本時間の日時を RFC3339 のローカル時刻としてフォーマット */
+function toJstDateTime(date: Date): string {
+  const parts = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+
+  const get = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`;
 }
 
 /** YYYY-MM-DD 形式にフォーマット */
