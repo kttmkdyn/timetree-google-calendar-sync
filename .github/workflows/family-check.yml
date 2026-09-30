@@ -1,0 +1,34 @@
+name: Check Family TimeTree Labels
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install timetree-exporter
+        run: pip install timetree-exporter==0.9.0
+
+      - name: Export Family calendar by label
+        env:
+          TIMETREE_EMAIL: ${{ secrets.TIMETREE_EMAIL }}
+          TIMETREE_PASSWORD: ${{ secrets.TIMETREE_PASSWORD }}
+        run: |
+          mkdir -p /tmp/family
+          timetree-exporter \
+            -e "$TIMETREE_EMAIL" \
+            -c "cHsx7daAmmzY" \
+            --split-by-label \
+            -o /tmp/family
+
+      - name: Show exported files
+        run: |
+          echo "=== Family export files ==="
+          find /tmp/family -maxdepth 2 -type f -print
