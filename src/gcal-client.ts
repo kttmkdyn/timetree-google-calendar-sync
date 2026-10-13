@@ -151,7 +151,8 @@ function toJstDateTime(date: Date): string {
     parts.find((part) => part.type === type)?.value ?? "";
 
 return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}+09:00`;
-
+}
+  
 /** YYYY-MM-DD 形式にフォーマット */
 function formatDate(date: Date): string {
   const y = date.getFullYear();
