@@ -111,7 +111,7 @@ export class GCalClient {
 if (event.allDay) {
   body.start = { date: formatDate(event.start) };
   body.end = { date: formatDate(event.end) };
-} else if (event.recurrence.length > 0) {
+} else {
   body.start = {
     dateTime: toJstDateTime(event.start),
     timeZone: "Asia/Tokyo",
@@ -120,9 +120,6 @@ if (event.allDay) {
     dateTime: toJstDateTime(event.end),
     timeZone: "Asia/Tokyo",
   };
-} else {
-  body.start = { dateTime: event.start.toISOString() };
-  body.end = { dateTime: event.end.toISOString() };
 }
 
 if (event.recurrence.length > 0) {
